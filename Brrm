@@ -717,31 +717,6 @@ reopenButton.MouseButton1Click:Connect(function()
     showNotification("UI has been restored\nYou can now access all features", 2)
 end)
 
--- Create example tabs with content
-local mainTab = createTab("Main")
-local settingsTab = createTab("Settings")
-local toolsTab = createTab("Tools")
-
--- Add content to main tab
-createLabel(mainTab, "MAIN CONTROLS", UDim2.new(1, 0, 0, isMobile() and 30 or 25), "section")
-createToggle(mainTab, "Enable Feature", false, function(state) 
-    showNotification("Feature " .. (state and "enabled" or "disabled"), 2)
-end)
-createSlider(mainTab, "Volume Level", 0, 100, 50, function(value)
-    showNotification("Volume set to: " .. value, 1)
-end)
-createButton(mainTab, "Test Button", function()
-    showNotification("Button pressed!", 2)
-end)
-
--- Add content to settings tab
-createLabel(settingsTab, "CONFIGURATION", UDim2.new(1, 0, 0, isMobile() and 30 or 25), "section")
-createToggle(settingsTab, "Dark Mode", true, function(state) end)
-createSlider(settingsTab, "UI Scale", 50, 150, 100, function(value) end)
-local settingsDropdown = createDropdown(settingsTab, "Options")
-settingsDropdown.addButton("Reset Settings", function() end)
-settingsDropdown.addToggle("Advanced Mode", false, function(state) end)
-
 -- Add content to tools tab
 createLabel(toolsTab, "UTILITIES", UDim2.new(1, 0, 0, isMobile() and 30 or 25), "section")
 createButton(toolsTab, "Refresh UI", function() end)
@@ -750,16 +725,56 @@ createButton(toolsTab, "Help", function()
     showNotification("Open the documentation for help", 3)
 end)
 
--- Activate first tab
-tabButtons["Main"].BackgroundColor3 = colors.tabActive
-tabFrames["Main"].Visible = true
+-- 🔥 PLOT UTILITIES SECTION
+createLabel(toolsTab, "PLOT UTILITIES", UDim2.new(1, 0, 0, isMobile() and 30 or 25), "section")
 
--- Initial notification
-showNotification(
-    "WELCOME TO THE COMPLETE UI!\n\n"..
-    "• Use tabs to navigate features\n"..
-    "• Click × to hide UI\n"..
-    "• ☰ button appears to reopen\n"..
-    "• Drag from colored edges to move",
-    6
-)
+-- Define plots
+local plotList = {
+    ["Plot A"] = workspace.Plots["a9bc8e0f-644a-4a85-a296-4a950ca7eea9"],
+    ["Plot B"] = workspace.Plots["c3a348b5-fdd3-49af-b36e-89c38cb7fd4a"],
+    ["Plot C"] = workspace.Plots["b43399cd-ace7-42fe-9388-f60ad66e93dc"],
+    ["Plot D"] = workspace.Plots["c7baff99-6111-4da3-9067-4fcd059f94b4"]
+}
+
+local selectedPlot = nil
+local currentHighlight = nil
+
+-- ESP function
+local function highlightPlot(plot)
+    if currentHighlight then currentHighlight:Destroy() end
+    local hl = Instance.new("Highlight")
+    hl.Adornee = plot
+    hl.FillColor = Color3.fromRGB(255, 100, 100)
+    hl.OutlineColor = Color3.fromRGB(255, 0, 0)
+    hl.FillTransparency = 0.5
+    hl.Parent = plot
+    currentHighlight = hl
+end
+
+-- Dropdown for selecting plot
+local plotDropdown = createDropdown(toolsTab, "Select Plot")
+for name, plot in pairs(plotList) do
+    plotDropdown.addButton(name, function()
+        selectedPlot = plot
+        highlightPlot(plot)
+        showNotification("Selected: " .. name, 2)
+    end)
+end
+
+-- Button to customize StealHitbox
+createButton(toolsTab, "Customize StealHitbox", function()
+    if selectedPlot then
+        local hitbox = selectedPlot:FindFirstChild("StealHitbox")
+        if hitbox and hitbox:IsA("BasePart") then
+            hitbox.Color = Color3.fromRGB(255, 0, 0)
+            hitbox.Material = Enum.Material.Neon
+            hitbox.Size += Vector3.new(1, 1, 1)
+            hitbox.Transparency = 0.25
+            showNotification("StealHitbox customized ✅", 2)
+        else
+            showNotification("❌ No StealHitbox found in selected plot", 3)
+        end
+    else
+        showNotification("⚠️ Select a plot first!", 2)
+    end
+end)
