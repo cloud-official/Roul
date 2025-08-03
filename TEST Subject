@@ -138,7 +138,7 @@ leftDrag.ZIndex = 2
 leftDrag.Parent = frame
 
 local rightDrag = Instance.new("Frame")
-rightDrag.Size = UDim2.new(0, 12, 1, -50)
+rightDrag.Size = UDim2.new(0, 120, 1, -50) -- CHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdh
 rightDrag.Position = UDim2.new(1, -12, 0, 30)
 rightDrag.BackgroundColor3 = colors.dragOutline
 rightDrag.BackgroundTransparency = 0.7
