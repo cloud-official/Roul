@@ -129,11 +129,11 @@ border.Parent = frame
 
 -- dnnbdjdndn
 local leftDrag = Instance.new("Frame")
-leftDrag.Size = UDim2.new(0, 12, 1, -50)
-leftDrag.Position = UDim2.new(0, 0, 0, 30)
+leftDrag.Size = UDim2.new(0, 40, 1, -50)
+leftDrag.Position = UDim2.new(-0.2, 0, 0, 30)
 leftDrag.BackgroundColor3 = colors.dragOutline
 leftDrag.BackgroundTransparency = 0.7
-leftDrag.BorderSizePixel = 0
+leftDrag.BorderSizePixel = 2
 leftDrag.ZIndex = 2
 leftDrag.Parent = frame
 
