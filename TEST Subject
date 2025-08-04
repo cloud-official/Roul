@@ -43,7 +43,7 @@ local function isMobile()
     return UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 end
 
--- Notification System
+-- Notification
 local notificationFrame = Instance.new("Frame")
 notificationFrame.Size = isMobile() and UDim2.new(0.9, 0, 0, 100) or UDim2.new(0, 320, 0, 90)
 notificationFrame.Position = isMobile() and UDim2.new(0.5, 0, 0.5, 0) or UDim2.new(0.5, -160, 1, -100)
@@ -109,7 +109,7 @@ local function showNotification(message, duration)
     end
 end
 
--- Main Frame with Visible Drag Outlines
+-- Main Frame
 local frame = Instance.new("Frame")
 frame.Size = isMobile() and UDim2.new(0, 380, 0, 500) or UDim2.new(0, 350, 0, 450)
 frame.Position = UDim2.new(0.5, isMobile() and -190 or -175, 0.5, isMobile() and -250 or -225)
@@ -127,7 +127,7 @@ border.Color = colors.border
 border.Thickness = 1
 border.Parent = frame
 
--- Visible Drag Outlines
+-- dnnbdjdndn
 local leftDrag = Instance.new("Frame")
 leftDrag.Size = UDim2.new(0, 12, 1, -50)
 leftDrag.Position = UDim2.new(0, 0, 0, 30)
@@ -155,7 +155,7 @@ bottomDrag.BorderSizePixel = 0
 bottomDrag.ZIndex = 2
 bottomDrag.Parent = frame
 
--- Title Bar
+-- Title is this nah
 local titleBar = Instance.new("Frame")
 titleBar.Size = UDim2.new(1, 0, 0, 30)
 titleBar.BackgroundColor3 = colors.primary
@@ -179,7 +179,7 @@ title.TextXAlignment = Enum.TextXAlignment.Left
 title.ZIndex = 3
 title.Parent = titleBar
 
--- Close Button with Rounded Corners
+-- Close NOW
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = isMobile() and UDim2.new(0, 35, 0, 35) or UDim2.new(0, 25, 0, 25)
 closeBtn.Position = UDim2.new(1, isMobile() and -40 or -30, 0.5, isMobile() and -17.5 or -12.5)
@@ -196,7 +196,7 @@ local closeCorner = Instance.new("UICorner")
 closeCorner.CornerRadius = UDim.new(1, 0)
 closeCorner.Parent = closeBtn
 
--- Reopen Button
+-- Reopen nigga 
 local reopenButton = Instance.new("TextButton")
 reopenButton.Size = isMobile() and UDim2.new(0, 60, 0, 60) or UDim2.new(0, 50, 0, 50)
 reopenButton.Position = UDim2.new(1, isMobile() and -70 or -60, 1, isMobile() and -70 or -60)
@@ -214,7 +214,7 @@ local reopenCorner = Instance.new("UICorner")
 reopenCorner.CornerRadius = UDim.new(1, 0)
 reopenCorner.Parent = reopenButton
 
--- Tab System
+-- Tab bro
 local tabButtons = {}
 local tabFrames = {}
 local tabsContainer = Instance.new("Frame")
@@ -236,7 +236,7 @@ tabsLayout.FillDirection = Enum.FillDirection.Horizontal
 tabsLayout.Padding = UDim.new(0, 5)
 tabsLayout.Parent = tabsScrolling
 
--- Content Frame
+-- frame
 local contentFrame = Instance.new("ScrollingFrame")
 contentFrame.Size = UDim2.new(1, -10, 1, isMobile() and -100 or -80)
 contentFrame.Position = UDim2.new(0, 5, 0, 80)
@@ -251,7 +251,7 @@ contentLayout.Padding = UDim.new(0, isMobile() and 12 or 8)
 contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = contentFrame
 
--- UI Component Functions
+-- UI code tbh
 local function createLabel(parent, text, size, labelType)
     local labelTypes = {
         default = {color = colors.labelDefault, bold = false},
@@ -588,7 +588,7 @@ local function createDropdown(parent, text, options)
     }
 end
 
--- Tab Creation Function
+-- Tab 2nd💔🥀🥀💔😭
 local function createTab(name)
     local tabButton = Instance.new("TextButton")
     tabButton.Size = UDim2.new(0, isMobile() and 110 or 100, 1, 0)
@@ -634,7 +634,7 @@ local function createTab(name)
     return tabFrame
 end
 
--- Make sure the UI is properly sized
+-- 💔
 tabsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     tabsScrolling.CanvasSize = UDim2.new(0, tabsLayout.AbsoluteContentSize.X, 0, 0)
 end)
@@ -643,7 +643,7 @@ contentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     contentFrame.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 10)
 end)
 
--- Keybind to toggle UI
+-- 💔🥀✋
 local toggleKey = Enum.KeyCode.RightControl
 local uiVisible = true
 
@@ -656,7 +656,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Make frame draggable from all edges
+-- nuggets 
 local dragging
 local dragInput
 local dragStart
@@ -717,12 +717,12 @@ reopenButton.MouseButton1Click:Connect(function()
     showNotification("UI has been restored\nYou can now access all features", 2)
 end)
 
--- Create example tabs with content
+
 local mainTab = createTab("Main")
 local settingsTab = createTab("Settings")
 local toolsTab = createTab("Tools")
 
--- Add content to main tab
+-- zombie 
 createLabel(mainTab, "MAIN CONTROLS", UDim2.new(1, 0, 0, isMobile() and 30 or 25), "section")
 createToggle(mainTab, "Enable Feature", false, function(state) 
     showNotification("Feature " .. (state and "enabled" or "disabled"), 2)
@@ -734,7 +734,7 @@ createButton(mainTab, "Test Button", function()
     showNotification("Button pressed!", 2)
 end)
 
--- Add content to settings tab
+-- hjh
 createLabel(settingsTab, "CONFIGURATION", UDim2.new(1, 0, 0, isMobile() and 30 or 25), "section")
 createToggle(settingsTab, "Dark Mode", true, function(state) end)
 createSlider(settingsTab, "UI Scale", 50, 150, 100, function(value) end)
@@ -742,7 +742,7 @@ local settingsDropdown = createDropdown(settingsTab, "Options")
 settingsDropdown.addButton("Reset Settings", function() end)
 settingsDropdown.addToggle("Advanced Mode", false, function(state) end)
 
--- Add content to tools tab
+-- b
 createLabel(toolsTab, "UTILITIES", UDim2.new(1, 0, 0, isMobile() and 30 or 25), "section")
 createButton(toolsTab, "Refresh UI", function() end)
 createButton(toolsTab, "Export Settings", function() end)
@@ -750,11 +750,11 @@ createButton(toolsTab, "Help", function()
     showNotification("Open the documentation for help", 3)
 end)
 
--- Activate first tab
+-- h
 tabButtons["Main"].BackgroundColor3 = colors.tabActive
 tabFrames["Main"].Visible = true
 
--- Initial notification
+-- sexy ahb notification 
 showNotification(
     "WELCOME TO THE COMPLETE UI!\n\n"..
     "• Use tabs to navigate features\n"..
