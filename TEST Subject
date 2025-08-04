@@ -128,32 +128,33 @@ border.Thickness = 1
 border.Parent = frame
 
 -- dnnbdjdndn
-local leftDrag = Instance.new("Frame")
-leftDrag.Size = UDim2.new(0, 40, 1, -50)
-leftDrag.Position = UDim2.new(-0.2, 0, 0, 30)
-leftDrag.BackgroundColor3 = colors.dragOutline
-leftDrag.BackgroundTransparency = 0.7
-leftDrag.BorderSizePixel = 2
-leftDrag.ZIndex = 2
-leftDrag.Parent = frame
+  local leftDrag = Instance.new("Frame")
+  leftDrag.Size = UDim2.new(0, 40, 1, -50)
+  leftDrag.Position = UDim2.new(-0.2, 0, 0, 30)
+  leftDrag.BackgroundColor3 = colors.dragOutline
+  leftDrag.BackgroundTransparency = 0.7
+  leftDrag.BorderSizePixel = 2
+  leftDrag.ZIndex = 2
+  leftDrag.Parent = frame
 
 local rightDrag = Instance.new("Frame")
-rightDrag.Size = UDim2.new(0, 120, 1, -50) -- CHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdhCHANGRvehebebhdjdbdbdhdh
-rightDrag.Position = UDim2.new(1, -12, 0, 30)
+rightDrag.Size = UDim2.new(0, 40, 1, -50)
+rightDrag.Position = UDim2.new(1, 0, 0, 30) + UDim2.new(00.1, 0, 0, 0)
 rightDrag.BackgroundColor3 = colors.dragOutline
 rightDrag.BackgroundTransparency = 0.7
-rightDrag.BorderSizePixel = 0
+rightDrag.BorderSizePixel = 2
 rightDrag.ZIndex = 2
 rightDrag.Parent = frame
 
 local bottomDrag = Instance.new("Frame")
-bottomDrag.Size = UDim2.new(1, 0, 0, 12)
-bottomDrag.Position = UDim2.new(0, 0, 1, -12)
+bottomDrag.Size = UDim2.new(1, 0, 0, 40)
+bottomDrag.Position = UDim2.new(0, 0, 1.05, 0)
 bottomDrag.BackgroundColor3 = colors.dragOutline
 bottomDrag.BackgroundTransparency = 0.7
-bottomDrag.BorderSizePixel = 0
+bottomDrag.BorderSizePixel = 2
 bottomDrag.ZIndex = 2
 bottomDrag.Parent = frame
+
 
 -- Title is this nah
 local titleBar = Instance.new("Frame")
@@ -183,7 +184,7 @@ title.Parent = titleBar
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = isMobile() and UDim2.new(0, 35, 0, 35) or UDim2.new(0, 25, 0, 25)
 closeBtn.Position = UDim2.new(1, isMobile() and -40 or -30, 0.5, isMobile() and -17.5 or -12.5)
-closeBtn.Text = "×"
+closeBtn.Text = "√ó"
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = isMobile() and 24 or 18
 closeBtn.TextColor3 = colors.text
@@ -200,7 +201,7 @@ closeCorner.Parent = closeBtn
 local reopenButton = Instance.new("TextButton")
 reopenButton.Size = isMobile() and UDim2.new(0, 60, 0, 60) or UDim2.new(0, 50, 0, 50)
 reopenButton.Position = UDim2.new(1, isMobile() and -70 or -60, 1, isMobile() and -70 or -60)
-reopenButton.Text = "☰"
+reopenButton.Text = "‚ò∞"
 reopenButton.Font = Enum.Font.GothamBold
 reopenButton.TextSize = isMobile() and 28 or 24
 reopenButton.TextColor3 = colors.text
@@ -472,7 +473,7 @@ local function createDropdown(parent, text, options)
     local header = Instance.new("TextButton")
     header.Size = UDim2.new(1, -50, 1, 0)
     header.Position = UDim2.new(0, 0, 0, 0)
-    header.Text = text .. " ▼"
+    header.Text = text .. " ‚ñº"
     header.Font = Enum.Font.GothamBold
     header.TextSize = isMobile() and 16 or 14
     header.TextColor3 = colors.text
@@ -492,7 +493,7 @@ local function createDropdown(parent, text, options)
     local closeButton = Instance.new("TextButton")
     closeButton.Size = UDim2.new(0, isMobile() and 40 or 30, 0, isMobile() and 40 or 30)
     closeButton.Position = UDim2.new(1, isMobile() and -45 or -35, 0.5, isMobile() and -20 or -15)
-    closeButton.Text = "×"
+    closeButton.Text = "√ó"
     closeButton.Font = Enum.Font.GothamBold
     closeButton.TextSize = isMobile() and 22 or 18
     closeButton.TextColor3 = colors.text
@@ -550,14 +551,14 @@ local function createDropdown(parent, text, options)
 
     header.MouseButton1Click:Connect(function()
         isOpen = not isOpen
-        header.Text = text .. (isOpen and " ▲" or " ▼")
+        header.Text = text .. (isOpen and " ‚ñ≤" or " ‚ñº")
         animateDropdown()
     end)
 
     closeButton.MouseButton1Click:Connect(function()
         if isOpen then
             isOpen = false
-            header.Text = text .. " ▼"
+            header.Text = text .. " ‚ñº"
             animateDropdown()
         end
     end)
@@ -588,7 +589,7 @@ local function createDropdown(parent, text, options)
     }
 end
 
--- Tab 2nd💔🥀🥀💔😭
+-- Tab 2ndüíîü•Äü•Äüíîüò≠
 local function createTab(name)
     local tabButton = Instance.new("TextButton")
     tabButton.Size = UDim2.new(0, isMobile() and 110 or 100, 1, 0)
@@ -634,7 +635,7 @@ local function createTab(name)
     return tabFrame
 end
 
--- 💔
+-- üíî
 tabsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     tabsScrolling.CanvasSize = UDim2.new(0, tabsLayout.AbsoluteContentSize.X, 0, 0)
 end)
@@ -643,7 +644,7 @@ contentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     contentFrame.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 10)
 end)
 
--- 💔🥀✋
+-- üíîü•Ä‚úã
 local toggleKey = Enum.KeyCode.RightControl
 local uiVisible = true
 
@@ -652,7 +653,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         uiVisible = not uiVisible
         frame.Visible = uiVisible
         reopenButton.Visible = not uiVisible
-        showNotification("UI " .. (uiVisible and "SHOWN" or "HIDDEN") .. "\n" .. (uiVisible and "Press RightControl to hide" or "Press RightControl or tap ☰ to show"), 2)
+        showNotification("UI " .. (uiVisible and "SHOWN" or "HIDDEN") .. "\n" .. (uiVisible and "Press RightControl to hide" or "Press RightControl or tap ‚ò∞ to show"), 2)
     end
 end)
 
@@ -708,7 +709,7 @@ end)
 closeBtn.MouseButton1Click:Connect(function()
     frame.Visible = false
     reopenButton.Visible = true
-    showNotification("UI has been hidden\nTap the ☰ button to reopen the menu", 3)
+    showNotification("UI has been hidden\nTap the ‚ò∞ button to reopen the menu", 3)
 end)
 
 reopenButton.MouseButton1Click:Connect(function()
@@ -757,9 +758,9 @@ tabFrames["Main"].Visible = true
 -- sexy ahb notification 
 showNotification(
     "WELCOME TO THE COMPLETE UI!\n\n"..
-    "• Use tabs to navigate features\n"..
-    "• Click × to hide UI\n"..
-    "• ☰ button appears to reopen\n"..
-    "• Drag from colored edges to move",
+    "‚Ä¢ Use tabs to navigate features\n"..
+    "‚Ä¢ Click √ó to hide UI\n"..
+    "‚Ä¢ ‚ò∞ button appears to reopen\n"..
+    "‚Ä¢ Drag from colored edges to move",
     6
 )
