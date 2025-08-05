@@ -1,0 +1,974 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "RouletteHubProUltimate"
+gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- UI Configuration with orange color scheme
+local config = {
+    colors = {
+        background = Color3.fromRGB(20, 20, 25),
+        primary = Color3.fromRGB(255, 140, 0),  -- Vibrant orange
+        secondary = Color3.fromRGB(200, 100, 0),
+        accent = Color3.fromRGB(100, 220, 255),  -- Bright cyan
+        text = Color3.fromRGB(245, 245, 245),
+        card = Color3.fromRGB(30, 30, 40),
+        tabActive = Color3.fromRGB(50, 50, 65),
+        tabInactive = Color3.fromRGB(40, 40, 55),
+        popup = Color3.fromRGB(35, 35, 50),
+        success = Color3.fromRGB(85, 200, 100),
+        danger = Color3.fromRGB(220, 80, 80),
+        highlight = Color3.fromRGB(255, 180, 50) -- Gold highlight
+    },
+    cornerRadius = UDim.new(0, 12),
+    sizes = {
+        small = UDim2.new(0, 350, 0, 450),
+        medium = UDim2.new(0, 500, 0, 600),
+        large = UDim2.new(0, 650, 0, 750),
+        leftSide = UDim2.new(0, 350, 0, 700)
+    },
+    currentSize = "medium",
+    animations = true
+}
+
+-- Gradient function for smooth color transitions
+local function applyGradient(frame, color1, color2, rotation)
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, color1),
+        ColorSequenceKeypoint.new(1, color2)
+    })
+    gradient.Rotation = rotation or 90
+    gradient.Parent = frame
+    return gradient
+end
+
+-- Main Draggable Container with shadow and gradient
+local container = Instance.new("Frame")
+container.Name = "Container"
+container.AnchorPoint = Vector2.new(0.5, 0.5)
+container.Position = UDim2.new(0.5, 0, 0.5, 0)
+container.Size = config.sizes.medium
+container.BackgroundColor3 = config.colors.background
+container.Parent = gui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = config.cornerRadius
+uiCorner.Parent = container
+
+-- Add shadow effect
+local shadow = Instance.new("ImageLabel")
+shadow.Name = "Shadow"
+shadow.Size = UDim2.new(1, 10, 1, 10)
+shadow.Position = UDim2.new(0, -5, 0, -5)
+shadow.BackgroundTransparency = 1
+shadow.Image = "rbxassetid://1316045217"
+shadow.ImageColor3 = Color3.new(0, 0, 0)
+shadow.ImageTransparency = 0.8
+shadow.ScaleType = Enum.ScaleType.Slice
+shadow.SliceCenter = Rect.new(10, 10, 118, 118)
+shadow.Parent = container
+
+-- Apply subtle gradient
+applyGradient(container, config.colors.background, Color3.fromRGB(25, 25, 35))
+
+-- Make container draggable with smooth movement
+local dragging, dragInput, dragStart, startPos
+local dragSpeed = 0.25 -- Smoothing factor for drag
+
+local function updateInput(input)
+    if not dragging then return end
+    
+    local delta = (input.Position - dragStart)
+    local newPos = UDim2.new(
+        startPos.X.Scale, 
+        startPos.X.Offset + delta.X, 
+        startPos.Y.Scale, 
+        startPos.Y.Offset + delta.Y
+    )
+    
+    if config.animations then
+        local tweenInfo = TweenInfo.new(dragSpeed, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local tween = TweenService:Create(container, tweenInfo, {Position = newPos})
+        tween:Play()
+    else
+        container.Position = newPos
+    end
+end
+
+container.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = container.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+container.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        updateInput(input)
+    end
+end)
+
+-- Animated Toggle Button with hover effects
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
+toggleButton.Position = UDim2.new(0, 20, 0.5, -25)
+toggleButton.BackgroundColor3 = config.colors.primary
+toggleButton.TextColor3 = config.colors.text
+toggleButton.Text = "RH"
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.TextSize = 18
+toggleButton.Visible = false
+toggleButton.Parent = gui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(1, 0)
+toggleCorner.Parent = toggleButton
+
+-- Add glow effect to toggle button
+local toggleGlow = Instance.new("ImageLabel")
+toggleGlow.Name = "Glow"
+toggleGlow.Size = UDim2.new(1, 20, 1, 20)
+toggleGlow.Position = UDim2.new(0, -10, 0, -10)
+toggleGlow.BackgroundTransparency = 1
+toggleGlow.Image = "rbxassetid://5028857084"
+toggleGlow.ImageColor3 = config.colors.primary
+toggleGlow.ImageTransparency = 0.8
+toggleGlow.ScaleType = Enum.ScaleType.Slice
+toggleGlow.SliceCenter = Rect.new(24, 24, 276, 276)
+toggleGlow.Parent = toggleButton
+
+-- Hover effects for toggle button
+toggleButton.MouseEnter:Connect(function()
+    if config.animations then
+        TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 55, 0, 55), Position = UDim2.new(0, 17.5, 0.5, -27.5)}):Play()
+        TweenService:Create(toggleGlow, TweenInfo.new(0.3), {ImageTransparency = 0.6}):Play()
+    end
+end)
+
+toggleButton.MouseLeave:Connect(function()
+    if config.animations then
+        TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 50, 0, 50), Position = UDim2.new(0, 20, 0.5, -25)}):Play()
+        TweenService:Create(toggleGlow, TweenInfo.new(0.3), {ImageTransparency = 0.8}):Play()
+    end
+end)
+
+-- Enhanced Header with gradient and effects
+local header = Instance.new("Frame")
+header.Name = "Header"
+header.Size = UDim2.new(1, 0, 0, 60) -- Taller header
+header.Position = UDim2.new(0, 0, 0, 0)
+header.BackgroundColor3 = config.colors.primary
+header.Parent = container
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 12)
+headerCorner.Parent = header
+
+-- Apply gradient to header
+applyGradient(header, config.colors.primary, config.colors.secondary, 15)
+
+-- Add noise effect to header
+local noise = Instance.new("ImageLabel")
+noise.Name = "Noise"
+noise.Size = UDim2.new(1, 0, 1, 0)
+noise.BackgroundTransparency = 1
+noise.Image = "rbxassetid://8349641965" -- Subtle noise texture
+noise.ImageTransparency = 0.95
+noise.Parent = header
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, -120, 1, 0)
+title.Position = UDim2.new(0, 20, 0, 0) -- More padding
+title.BackgroundTransparency = 1
+title.Text = "ROULETTE HUB"
+title.TextColor3 = config.colors.text
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 22
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextYAlignment = Enum.TextYAlignment.Center
+title.Parent = header
+
+-- Add subtitle with version
+local subtitle = Instance.new("TextLabel")
+subtitle.Name = "Subtitle"
+subtitle.Size = UDim2.new(1, -120, 0, 16)
+subtitle.Position = UDim2.new(0, 20, 0, 35)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "ULTIMATE EDITION v2.0"
+subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextSize = 12
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.Parent = header
+
+-- Enhanced Close/Minimize Buttons with hover animations
+local function createHeaderButton(name, text, position)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Size = UDim2.new(0, 32, 0, 32)
+    button.Position = position
+    button.AnchorPoint = Vector2.new(0.5, 0.5)
+    button.BackgroundTransparency = 1
+    button.Text = text
+    button.TextColor3 = config.colors.text
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 18
+    button.Parent = header
+    
+    -- Circle background that appears on hover
+    local circle = Instance.new("Frame")
+    circle.Name = "Circle"
+    circle.Size = UDim2.new(0, 0, 0, 0)
+    circle.AnchorPoint = Vector2.new(0.5, 0.5)
+    circle.Position = UDim2.new(0.5, 0, 0.5, 0)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BackgroundTransparency = 1
+    circle.Parent = button
+    
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = circle
+    
+    button.MouseEnter:Connect(function()
+        if config.animations then
+            TweenService:Create(circle, TweenInfo.new(0.2), {
+                Size = UDim2.new(1, 0, 1, 0),
+                BackgroundTransparency = 0.9
+            }):Play()
+            TweenService:Create(button, TweenInfo.new(0.1), {TextSize = 20}):Play()
+        end
+    end)
+    
+    button.MouseLeave:Connect(function()
+        if config.animations then
+            TweenService:Create(circle, TweenInfo.new(0.2), {
+                Size = UDim2.new(0, 0, 0, 0),
+                BackgroundTransparency = 1
+            }):Play()
+            TweenService:Create(button, TweenInfo.new(0.1), {TextSize = 18}):Play()
+        end
+    end)
+    
+    return button
+end
+
+local closeButton = createHeaderButton("CloseButton", "×", UDim2.new(1, -36, 0.5, 0))
+local minimizeButton = createHeaderButton("MinimizeButton", "−", UDim2.new(1, -76, 0.5, 0))
+
+-- Add a divider between header and content
+local headerDivider = Instance.new("Frame")
+headerDivider.Name = "Divider"
+headerDivider.Size = UDim2.new(1, 0, 0, 1)
+headerDivider.Position = UDim2.new(0, 0, 1, 0)
+headerDivider.BackgroundColor3 = config.colors.accent
+headerDivider.BorderSizePixel = 0
+headerDivider.Parent = header
+
+-- Scrollable Tabs with improved styling
+local tabs = {"Main", "Combat", "Utility", "Fun", "Admin", "Premium"}
+local tabButtons = {}
+
+-- Create a scrolling frame for tabs
+local tabScrollContainer = Instance.new("ScrollingFrame")
+tabScrollContainer.Name = "TabScrollContainer"
+tabScrollContainer.Size = UDim2.new(1, -40, 0, 40)
+tabScrollContainer.Position = UDim2.new(0, 20, 0, 70)
+tabScrollContainer.BackgroundTransparency = 1
+tabScrollContainer.ScrollBarThickness = 6
+tabScrollContainer.ScrollBarImageColor3 = config.colors.accent
+tabScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+tabScrollContainer.Parent = container
+
+local tabContainer = Instance.new("Frame")
+tabContainer.Name = "TabContainer"
+tabContainer.Size = UDim2.new(0, 0, 1, 0) -- Width will be set dynamically
+tabContainer.BackgroundTransparency = 1
+tabContainer.Parent = tabScrollContainer
+
+local tabListLayout = Instance.new("UIListLayout")
+tabListLayout.FillDirection = Enum.FillDirection.Horizontal
+tabListLayout.Padding = UDim.new(0, 8) -- More spacing between tabs
+tabListLayout.Parent = tabContainer
+
+-- Update tab container size when tabs are added
+tabListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    tabContainer.Size = UDim2.new(0, tabListLayout.AbsoluteContentSize.X, 1, 0)
+    tabScrollContainer.CanvasSize = UDim2.new(0, tabListLayout.AbsoluteContentSize.X, 0, 0)
+end)
+
+-- Create enhanced tab buttons
+for i, tabName in ipairs(tabs) do
+    local tabButton = Instance.new("TextButton")
+    tabButton.Name = tabName .. "Tab"
+    tabButton.Size = UDim2.new(0, 80, 1, 0)
+    tabButton.BackgroundColor3 = i == 1 and config.colors.tabActive or config.colors.tabInactive
+    tabButton.AutoButtonColor = false
+    tabButton.Text = tabName
+    tabButton.TextColor3 = config.colors.text
+    tabButton.Font = Enum.Font.GothamMedium
+    tabButton.TextSize = 14
+    tabButton.Parent = tabContainer
+    
+    local tabCorner = Instance.new("UICorner")
+    tabCorner.CornerRadius = UDim.new(0, 6)
+    tabCorner.Parent = tabButton
+    
+    -- Add indicator for active tab
+    local indicator = Instance.new("Frame")
+    indicator.Name = "Indicator"
+    indicator.Size = UDim2.new(1, 0, 0, 3)
+    indicator.Position = UDim2.new(0, 0, 1, -3)
+    indicator.BackgroundColor3 = config.colors.accent
+    indicator.Visible = i == 1
+    indicator.Parent = tabButton
+    
+    -- Hover effects
+    tabButton.MouseEnter:Connect(function()
+        if tabButton.BackgroundColor3 ~= config.colors.tabActive then
+            if config.animations then
+                TweenService:Create(tabButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 50, 70)}):Play()
+            end
+        end
+    end)
+    
+    tabButton.MouseLeave:Connect(function()
+        if tabButton.BackgroundColor3 ~= config.colors.tabActive then
+            if config.animations then
+                TweenService:Create(tabButton, TweenInfo.new(0.2), {BackgroundColor3 = config.colors.tabInactive}):Play()
+            end
+        end
+    end)
+    
+    tabButtons[tabName] = {
+        button = tabButton,
+        indicator = indicator
+    }
+end
+
+-- Enhanced Search Bar with modern design
+local searchContainer = Instance.new("Frame")
+searchContainer.Name = "SearchContainer"
+searchContainer.Size = UDim2.new(1, -40, 0, 50) -- Taller search bar
+searchContainer.Position = UDim2.new(0, 20, 0, 120) -- Adjusted position
+searchContainer.BackgroundColor3 = config.colors.card
+searchContainer.Parent = container
+
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = config.cornerRadius
+searchCorner.Parent = searchContainer
+
+-- Add search icon
+local searchIcon = Instance.new("ImageLabel")
+searchIcon.Name = "SearchIcon"
+searchIcon.Size = UDim2.new(0, 20, 0, 20)
+searchIcon.Position = UDim2.new(0, 15, 0.5, -10)
+searchIcon.BackgroundTransparency = 1
+searchIcon.Image = "rbxassetid://3926305904" -- Search icon from Roblox icons
+searchIcon.ImageColor3 = Color3.fromRGB(150, 150, 150)
+searchIcon.ImageRectOffset = Vector2.new(964, 324)
+searchIcon.ImageRectSize = Vector2.new(36, 36)
+searchIcon.Parent = searchContainer
+
+local searchBox = Instance.new("TextBox")
+searchBox.Name = "SearchBox"
+searchBox.Size = UDim2.new(0.75, -10, 1, 0)
+searchBox.Position = UDim2.new(0, 45, 0, 0)
+searchBox.BackgroundTransparency = 1
+searchBox.PlaceholderText = "Search scripts..."
+searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+searchBox.Text = ""
+searchBox.TextColor3 = config.colors.text
+searchBox.Font = Enum.Font.Gotham
+searchBox.TextSize = 14
+searchBox.TextXAlignment = Enum.TextXAlignment.Left
+searchBox.Parent = searchContainer
+
+-- Enhanced search button with icon
+local searchButton = Instance.new("TextButton")
+searchButton.Name = "SearchButton"
+searchButton.Size = UDim2.new(0.25, -5, 0.8, 0)
+searchButton.Position = UDim2.new(0.75, 5, 0.1, 0)
+searchButton.BackgroundColor3 = config.colors.accent
+searchButton.Text = "SEARCH"
+searchButton.TextColor3 = Color3.fromRGB(20, 20, 20)
+searchButton.Font = Enum.Font.GothamBold
+searchButton.TextSize = 14
+searchButton.Parent = searchContainer
+
+local searchButtonCorner = Instance.new("UICorner")
+searchButtonCorner.CornerRadius = config.cornerRadius
+searchButtonCorner.Parent = searchButton
+
+-- Add hover effect to search button
+searchButton.MouseEnter:Connect(function()
+    if config.animations then
+        TweenService:Create(searchButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(120, 240, 255)}):Play()
+    end
+end)
+
+searchButton.MouseLeave:Connect(function()
+    if config.animations then
+        TweenService:Create(searchButton, TweenInfo.new(0.2), {BackgroundColor3 = config.colors.accent}):Play()
+    end
+end)
+
+-- Scripts Container with custom scrollbar
+local scriptsContainer = Instance.new("ScrollingFrame")
+scriptsContainer.Name = "ScriptsContainer"
+scriptsContainer.Size = UDim2.new(1, -40, 1, -180)
+scriptsContainer.Position = UDim2.new(0, 20, 0, 180)
+scriptsContainer.BackgroundTransparency = 1
+scriptsContainer.ScrollBarThickness = 8
+scriptsContainer.ScrollBarImageColor3 = config.colors.accent
+scriptsContainer.ScrollBarImageTransparency = 0.7
+scriptsContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+scriptsContainer.Parent = container
+
+-- Custom scrollbar styling
+local scrollBar = scriptsContainer:FindFirstChildOfClass("UIScrollBar")
+if scrollBar then
+    scrollBar:Destroy() -- Remove default scrollbar
+    
+    local newScrollBar = Instance.new("Frame")
+    newScrollBar.Name = "CustomScrollBar"
+    newScrollBar.Size = UDim2.new(0, 6, 1, 0)
+    newScrollBar.Position = UDim2.new(1, -6, 0, 0)
+    newScrollBar.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    newScrollBar.BackgroundTransparency = 0.8
+    newScrollBar.Parent = scriptsContainer
+    
+    local scrollBarCorner = Instance.new("UICorner")
+    scrollBarCorner.CornerRadius = UDim.new(1, 0)
+    scrollBarCorner.Parent = newScrollBar
+    
+    local scrollThumb = Instance.new("Frame")
+    scrollThumb.Name = "ScrollThumb"
+    scrollThumb.Size = UDim2.new(1, 0, 0.2, 0)
+    scrollThumb.BackgroundColor3 = config.colors.accent
+    scrollThumb.BackgroundTransparency = 0.5
+    scrollThumb.Parent = newScrollBar
+    
+    local thumbCorner = Instance.new("UICorner")
+    thumbCorner.CornerRadius = UDim.new(1, 0)
+    thumbCorner.Parent = scrollThumb
+    
+    -- Animate scroll thumb
+    scriptsContainer:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+        local maxOffset = scriptsContainer.CanvasSize.Y.Offset - scriptsContainer.AbsoluteWindowSize.Y
+        if maxOffset > 0 then
+            local ratio = scriptsContainer.CanvasPosition.Y / maxOffset
+            scrollThumb.Position = UDim2.new(0, 0, ratio, 0)
+        end
+    end)
+end
+
+local scriptsListLayout = Instance.new("UIListLayout")
+scriptsListLayout.Padding = UDim.new(0, 12) -- More spacing between cards
+scriptsListLayout.Parent = scriptsContainer
+
+-- Update canvas size when scripts are added
+scriptsListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    scriptsContainer.CanvasSize = UDim2.new(0, 0, 0, scriptsListLayout.AbsoluteContentSize.Y)
+end)
+
+-- Confirmation Popup with enhanced design
+local popup = Instance.new("Frame")
+popup.Name = "ConfirmationPopup"
+popup.Size = UDim2.new(0, 400, 0, 250) -- Larger popup
+popup.AnchorPoint = Vector2.new(0.5, 0.5)
+popup.Position = UDim2.new(0.5, 0, 0.5, 0)
+popup.BackgroundColor3 = config.colors.popup
+popup.Visible = false
+popup.ZIndex = 10
+popup.Parent = gui
+
+local popupCorner = Instance.new("UICorner")
+popupCorner.CornerRadius = config.cornerRadius
+popupCorner.Parent = popup
+
+-- Add shadow to popup
+local popupShadow = Instance.new("ImageLabel")
+popupShadow.Name = "Shadow"
+popupShadow.Size = UDim2.new(1, 20, 1, 20)
+popupShadow.Position = UDim2.new(0, -10, 0, -10)
+popupShadow.BackgroundTransparency = 1
+popupShadow.Image = "rbxassetid://1316045217"
+popupShadow.ImageColor3 = Color3.new(0, 0, 0)
+popupShadow.ImageTransparency = 0.7
+popupShadow.ScaleType = Enum.ScaleType.Slice
+popupShadow.SliceCenter = Rect.new(10, 10, 118, 118)
+popupShadow.ZIndex = 9
+popupShadow.Parent = popup
+
+local popupHeader = Instance.new("Frame")
+popupHeader.Name = "Header"
+popupHeader.Size = UDim2.new(1, 0, 0, 50) -- Taller header
+popupHeader.Position = UDim2.new(0, 0, 0, 0)
+popupHeader.BackgroundColor3 = config.colors.primary
+popupHeader.ZIndex = 11
+popupHeader.Parent = popup
+
+local popupHeaderCorner = Instance.new("UICorner")
+popupHeaderCorner.CornerRadius = UDim.new(0, 12)
+popupHeaderCorner.Parent = popupHeader
+
+-- Apply gradient to popup header
+applyGradient(popupHeader, config.colors.primary, config.colors.secondary, 15)
+
+local popupTitle = Instance.new("TextLabel")
+popupTitle.Name = "Title"
+popupTitle.Size = UDim2.new(1, -40, 1, 0)
+popupTitle.Position = UDim2.new(0, 20, 0, 0)
+popupTitle.BackgroundTransparency = 1
+popupTitle.Text = "CONFIRM EXECUTION"
+popupTitle.TextColor3 = config.colors.text
+popupTitle.Font = Enum.Font.GothamBold
+popupTitle.TextSize = 18
+popupTitle.TextXAlignment = Enum.TextXAlignment.Left
+popupTitle.TextYAlignment = Enum.TextYAlignment.Center
+popupTitle.ZIndex = 11
+popupTitle.Parent = popupHeader
+
+local popupClose = createHeaderButton("CloseButton", "×", UDim2.new(1, -36, 0.5, 0))
+popupClose.ZIndex = 11
+popupClose.Parent = popupHeader
+
+local popupDesc = Instance.new("TextLabel")
+popupDesc.Name = "Description"
+popupDesc.Size = UDim2.new(1, -40, 0, 100)
+popupDesc.Position = UDim2.new(0, 20, 0, 60)
+popupDesc.BackgroundTransparency = 1
+popupDesc.Text = "Are you sure you want to execute this script?"
+popupDesc.TextColor3 = config.colors.text
+popupDesc.Font = Enum.Font.Gotham
+popupDesc.TextSize = 14
+popupDesc.TextWrapped = true
+popupDesc.TextXAlignment = Enum.TextXAlignment.Left
+popupDesc.TextYAlignment = Enum.TextYAlignment.Top
+popupDesc.ZIndex = 11
+popupDesc.Parent = popup
+
+-- Enhanced action buttons
+local buttonContainer = Instance.new("Frame")
+buttonContainer.Name = "ButtonContainer"
+buttonContainer.Size = UDim2.new(1, -40, 0, 50)
+buttonContainer.Position = UDim2.new(0, 20, 1, -70)
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.ZIndex = 11
+buttonContainer.Parent = popup
+
+local confirmButton = Instance.new("TextButton")
+confirmButton.Name = "Confirm"
+confirmButton.Size = UDim2.new(0.45, 0, 1, 0)
+confirmButton.Position = UDim2.new(0, 0, 0, 0)
+confirmButton.BackgroundColor3 = config.colors.success
+confirmButton.Text = "CONFIRM"
+confirmButton.TextColor3 = Color3.fromRGB(20, 20, 20)
+confirmButton.Font = Enum.Font.GothamBold
+confirmButton.TextSize = 14
+confirmButton.ZIndex = 11
+confirmButton.Parent = buttonContainer
+
+local confirmCorner = Instance.new("UICorner")
+confirmCorner.CornerRadius = config.cornerRadius
+confirmCorner.Parent = confirmButton
+
+-- Add icon to confirm button
+local confirmIcon = Instance.new("ImageLabel")
+confirmIcon.Name = "Icon"
+confirmIcon.Size = UDim2.new(0, 20, 0, 20)
+confirmIcon.Position = UDim2.new(0, 10, 0.5, -10)
+confirmIcon.BackgroundTransparency = 1
+confirmIcon.Image = "rbxassetid://3926305904" -- Checkmark icon
+confirmIcon.ImageColor3 = Color3.fromRGB(20, 20, 20)
+confirmIcon.ImageRectOffset = Vector2.new(324, 364)
+confirmIcon.ImageRectSize = Vector2.new(36, 36)
+confirmIcon.ZIndex = 11
+confirmIcon.Parent = confirmButton
+
+local cancelButton = Instance.new("TextButton")
+cancelButton.Name = "Cancel"
+cancelButton.Size = UDim2.new(0.45, 0, 1, 0)
+cancelButton.Position = UDim2.new(0.55, 0, 0, 0)
+cancelButton.BackgroundColor3 = config.colors.danger
+cancelButton.Text = "CANCEL"
+cancelButton.TextColor3 = config.colors.text
+cancelButton.Font = Enum.Font.GothamBold
+cancelButton.TextSize = 14
+cancelButton.ZIndex = 11
+cancelButton.Parent = buttonContainer
+
+local cancelCorner = Instance.new("UICorner")
+cancelCorner.CornerRadius = config.cornerRadius
+cancelCorner.Parent = cancelButton
+
+-- Add icon to cancel button
+local cancelIcon = Instance.new("ImageLabel")
+cancelIcon.Name = "Icon"
+cancelIcon.Size = UDim2.new(0, 20, 0, 20)
+cancelIcon.Position = UDim2.new(0, 10, 0.5, -10)
+cancelIcon.BackgroundTransparency = 1
+cancelIcon.Image = "rbxassetid://3926305904" -- X icon
+cancelIcon.ImageColor3 = config.colors.text
+cancelIcon.ImageRectOffset = Vector2.new(284, 4)
+cancelIcon.ImageRectSize = Vector2.new(24, 24)
+cancelIcon.ZIndex = 11
+cancelIcon.Parent = cancelButton
+
+-- Add hover effects to action buttons
+local function setupButtonHover(button, hoverColor)
+    button.MouseEnter:Connect(function()
+        if config.animations then
+            TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor}):Play()
+        end
+    end)
+    
+    button.MouseLeave:Connect(function()
+        if config.animations then
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = button.Name == "Confirm" and config.colors.success or config.colors.danger
+            }):Play()
+        end
+    end)
+end
+
+setupButtonHover(confirmButton, Color3.fromRGB(120, 220, 120))
+setupButtonHover(cancelButton, Color3.fromRGB(220, 120, 120))
+
+-- UI Management Functions
+local function toggleUI(visible)
+    if visible then
+        if config.animations then
+            container.Visible = true
+            container.Size = UDim2.new(0, 0, 0, 0)
+            container.Position = UDim2.new(0.5, 0, 0.5, 0)
+            
+            local tween = TweenService:Create(container, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = config.sizes[config.currentSize]
+            })
+            tween:Play()
+        else
+            container.Visible = true
+        end
+        toggleButton.Visible = false
+    else
+        if config.animations then
+            local tween = TweenService:Create(container, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+                Size = UDim2.new(0, 0, 0, 0)
+            })
+            tween.Completed:Connect(function()
+                container.Visible = false
+            end)
+            tween:Play()
+        else
+            container.Visible = false
+        end
+        toggleButton.Visible = true
+    end
+end
+
+-- Script Management System
+local RouletteHub = {
+    scripts = {},
+    currentTab = "Main",
+    searchQuery = "",
+    currentScript = nil
+}
+
+function RouletteHub:AddScript(name, description, tab, executeFunction)
+    table.insert(self.scripts, {
+        name = name,
+        description = description,
+        tab = tab or "Main",
+        execute = executeFunction or function() end
+    })
+end
+
+function RouletteHub:ShowConfirmation(script)
+    self.currentScript = script
+    popupTitle.Text = script.name
+    popupDesc.Text = script.description.."\n\nAre you sure you want to execute this script?"
+    
+    if config.animations then
+        popup.Size = UDim2.new(0, 0, 0, 0)
+        popup.Visible = true
+        local tween = TweenService:Create(popup, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 400, 0, 250)
+        })
+        tween:Play()
+    else
+        popup.Visible = true
+    end
+    
+    container.Visible = false
+end
+
+function RouletteHub:RenderScripts()
+    -- Clear existing scripts
+    for _, child in ipairs(scriptsContainer:GetChildren()) do
+        if child:IsA("Frame") then
+            if config.animations then
+                local tween = TweenService:Create(child, TweenInfo.new(0.2), {
+                    Size = UDim2.new(1, 0, 0, 0),
+                    BackgroundTransparency = 1
+                })
+                tween.Completed:Connect(function()
+                    child:Destroy()
+                end)
+                tween:Play()
+            else
+                child:Destroy()
+            end
+        end
+    end
+    
+    -- Wait for animations to complete
+    if config.animations then
+        wait(0.25)
+    end
+    
+    -- Filter scripts
+    local filteredScripts = {}
+    for _, script in ipairs(self.scripts) do
+        local matchesTab = script.tab == self.currentTab
+        local matchesSearch = self.searchQuery == "" or 
+                            string.find(string.lower(script.name), string.lower(self.searchQuery), 1, true)
+        
+        if matchesTab and matchesSearch then
+            table.insert(filteredScripts, script)
+        end
+    end
+    
+    -- Create enhanced script cards
+    for _, script in ipairs(filteredScripts) do
+        local card = Instance.new("Frame")
+        card.Name = script.name
+        card.Size = UDim2.new(1, 0, 0, 100) -- Taller cards
+        card.BackgroundColor3 = config.colors.card
+        card.Parent = scriptsContainer
+        
+        local cardCorner = Instance.new("UICorner")
+        cardCorner.CornerRadius = config.cornerRadius
+        cardCorner.Parent = card
+        
+        -- Add subtle gradient
+        applyGradient(card, config.colors.card, Color3.fromRGB(40, 40, 50))
+        
+        -- Add highlight on hover
+        local highlight = Instance.new("Frame")
+        highlight.Name = "Highlight"
+        highlight.Size = UDim2.new(1, 0, 1, 0)
+        highlight.BackgroundColor3 = config.colors.highlight
+        highlight.BackgroundTransparency = 1
+        highlight.Parent = card
+        
+        local highlightCorner = Instance.new("UICorner")
+        highlightCorner.CornerRadius = config.cornerRadius
+        highlightCorner.Parent = highlight
+        
+        card.MouseEnter:Connect(function()
+            if config.animations then
+                TweenService:Create(highlight, TweenInfo.new(0.2), {BackgroundTransparency = 0.9}):Play()
+            end
+        end)
+        
+        card.MouseLeave:Connect(function()
+            if config.animations then
+                TweenService:Create(highlight, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+            end
+        end)
+        
+        local title = Instance.new("TextLabel")
+        title.Name = "Title"
+        title.Size = UDim2.new(0.7, -20, 0, 30)
+        title.Position = UDim2.new(0, 15, 0, 10)
+        title.BackgroundTransparency = 1
+        title.Text = script.name
+        title.TextColor3 = config.colors.text
+        title.Font = Enum.Font.GothamBold
+        title.TextSize = 16
+        title.TextXAlignment = Enum.TextXAlignment.Left
+        title.Parent = card
+        
+        local desc = Instance.new("TextLabel")
+        desc.Name = "Description"
+        desc.Size = UDim2.new(0.7, -20, 0, 50)
+        desc.Position = UDim2.new(0, 15, 0, 40)
+        desc.BackgroundTransparency = 1
+        desc.Text = script.description
+        desc.TextColor3 = Color3.fromRGB(180, 180, 180)
+        desc.Font = Enum.Font.Gotham
+        desc.TextSize = 12
+        desc.TextXAlignment = Enum.TextXAlignment.Left
+        desc.TextYAlignment = Enum.TextYAlignment.Top
+        desc.TextWrapped = true
+        desc.Parent = card
+        
+        local executeBtn = Instance.new("TextButton")
+        executeBtn.Name = "Execute"
+        executeBtn.Size = UDim2.new(0.25, -15, 0.6, 0)
+        executeBtn.Position = UDim2.new(0.75, 0, 0.2, 0)
+        executeBtn.BackgroundColor3 = config.colors.primary
+        executeBtn.Text = "RUN"
+        executeBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
+        executeBtn.Font = Enum.Font.GothamBold
+        executeBtn.TextSize = 14
+        executeBtn.Parent = card
+        
+        local executeCorner = Instance.new("UICorner")
+        executeCorner.CornerRadius = config.cornerRadius
+        executeCorner.Parent = executeBtn
+        
+        -- Add icon to execute button
+        local executeIcon = Instance.new("ImageLabel")
+        executeIcon.Name = "Icon"
+        executeIcon.Size = UDim2.new(0, 18, 0, 18)
+        executeIcon.Position = UDim2.new(0, 8, 0.5, -9)
+        executeIcon.BackgroundTransparency = 1
+        executeIcon.Image = "rbxassetid://3926305904" -- Play icon
+        executeIcon.ImageColor3 = Color3.fromRGB(20, 20, 20)
+        executeIcon.ImageRectOffset = Vector2.new(124, 204)
+        executeIcon.ImageRectSize = Vector2.new(36, 36)
+        executeIcon.Parent = executeBtn
+        
+        -- Hover effect for execute button
+        executeBtn.MouseEnter:Connect(function()
+            if config.animations then
+                TweenService:Create(executeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 180, 50)}):Play()
+            end
+        end)
+        
+        executeBtn.MouseLeave:Connect(function()
+            if config.animations then
+                TweenService:Create(executeBtn, TweenInfo.new(0.2), {BackgroundColor3 = config.colors.primary}):Play()
+            end
+        end)
+        
+        executeBtn.MouseButton1Click:Connect(function()
+            self:ShowConfirmation(script)
+        end)
+        
+        -- Animate card appearance
+        if config.animations then
+            card.Size = UDim2.new(1, 0, 0, 0)
+            card.BackgroundTransparency = 1
+            card.Visible = true
+            
+            local tween = TweenService:Create(card, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(1, 0, 0, 100),
+                BackgroundTransparency = 0
+            })
+            tween:Play()
+        end
+    end
+    
+    scriptsContainer.CanvasSize = UDim2.new(0, 0, 0, scriptsListLayout.AbsoluteContentSize.Y)
+end
+
+-- Connect UI events
+closeButton.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+minimizeButton.MouseButton1Click:Connect(function()
+    toggleUI(false)
+end)
+
+toggleButton.MouseButton1Click:Connect(function()
+    toggleUI(true)
+end)
+
+popupClose.MouseButton1Click:Connect(function()
+    popup.Visible = false
+    container.Visible = true
+end)
+
+searchButton.MouseButton1Click:Connect(function()
+    RouletteHub.searchQuery = searchBox.Text
+    RouletteHub:RenderScripts()
+end)
+
+searchBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        RouletteHub.searchQuery = searchBox.Text
+        RouletteHub:RenderScripts()
+    end
+end)
+
+for tabName, tabData in pairs(tabButtons) do
+    tabData.button.MouseButton1Click:Connect(function()
+        -- Update tab colors
+        for _, btn in pairs(tabButtons) do
+            btn.button.BackgroundColor3 = config.colors.tabInactive
+            btn.indicator.Visible = false
+        end
+        tabData.button.BackgroundColor3 = config.colors.tabActive
+        tabData.indicator.Visible = true
+        
+        -- Update current tab and render
+        RouletteHub.currentTab = tabName
+        RouletteHub:RenderScripts()
+    end)
+end
+
+confirmButton.MouseButton1Click:Connect(function()
+    if RouletteHub.currentScript then
+        RouletteHub.currentScript.execute()
+    end
+    
+    if config.animations then
+        local tween = TweenService:Create(popup, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0)
+        })
+        tween.Completed:Connect(function()
+            popup.Visible = false
+        end)
+        tween:Play()
+    else
+        popup.Visible = false
+    end
+    
+    container.Visible = true
+end)
+
+cancelButton.MouseButton1Click:Connect(function()
+    if config.animations then
+        local tween = TweenService:Create(popup, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0)
+        })
+        tween.Completed:Connect(function()
+            popup.Visible = false
+        end)
+        tween:Play()
+    else
+        popup.Visible = false
+    end
+    
+    container.Visible = true
+end)
+
+-- Initialize UI
+toggleUI(true)
+RouletteHub:RenderScripts()
