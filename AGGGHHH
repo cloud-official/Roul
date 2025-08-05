@@ -286,6 +286,10 @@ headerDivider.BackgroundColor3 = config.colors.accent
 headerDivider.BorderSizePixel = 0
 headerDivider.Parent = header
 
+-- Scrollable Tabs with improved styling
+local tabs = {"Main", "Combat", "Utility", "Fun", "Admin", "Premium"}
+local tabButtons = {}
+
 -- Create a scrolling frame for tabs
 local tabScrollContainer = Instance.new("ScrollingFrame")
 tabScrollContainer.Name = "TabScrollContainer"
@@ -964,10 +968,6 @@ cancelButton.MouseButton1Click:Connect(function()
     
     container.Visible = true
 end)
-
--- Scrollable Tabs with improved styling
-local tabs = {"Main", "Combat", "Utility", "Fun", "Admin", "Premium"}
-local tabButtons = {}
 
 -- Initialize UI
 toggleUI(true)
