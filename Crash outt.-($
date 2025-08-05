@@ -170,7 +170,7 @@ title.BackgroundTransparency = 1
 title.TextColor3 = colors.text
 title.Font = Enum.Font.GothamBold
 title.TextSize = isMobile() and 18 or 16
-title.Text = "Complete UI"
+title.Text = "Roulett Hub | UNIVERSAL "
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.ZIndex = 3
 title.Parent = titleBar
@@ -707,13 +707,11 @@ end)
 closeBtn.MouseButton1Click:Connect(function()
     frame.Visible = false
     reopenButton.Visible = true
-    showNotification("UI has been hidden\nTap the ⬤ button to reopen the menu", 3)
 end)
 
 reopenButton.MouseButton1Click:Connect(function()
     frame.Visible = true
     reopenButton.Visible = false
-    showNotification("UI has been restored\nYou can now access all features", 2)
 end)
 
 local mainTab = createTab("Main")
@@ -748,11 +746,7 @@ end)
 tabButtons["Main"].BackgroundColor3 = colors.tabActive
 tabFrames["Main"].Visible = true
 
-showNotification(
-    "WELCOME TO THE COMPLETE UI!\n\n"..
-    "• Use tabs to navigate features\n"..
-    "• Click × to hide UI\n"..
-    "• ⬤ button appears to reopen\n"..
-    "• Drag from colored edges to move",
-    6
-)
+
+
+
+
